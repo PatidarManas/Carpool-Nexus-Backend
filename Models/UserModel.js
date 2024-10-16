@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  prefix: {
+  title: {
     type: String,
     trim: true,
   },
@@ -21,6 +21,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: Number,
+    required: false,
+  },
+  dob: {
+    type: Date,
+    required: true
+  },
+  isWhatsapp: {
+    type: Boolean,
+    default: false,
+  },
+  isPhoneVerified: {
+    type: Boolean,
+    default: false
+  },
+  isDocVerified: {
+    type: Boolean,
+    default: false
+  },
+  
   rides: {
     type: [String],  // Array of ride IDs or references to a Ride model
     default: [],
@@ -71,4 +92,4 @@ userSchema.pre('save', function (next) {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

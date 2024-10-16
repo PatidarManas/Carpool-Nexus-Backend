@@ -2,10 +2,38 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';  // Assuming your model is in models/userModel
 
+
+//islogin 
+export const isLogin = async (req, res) => {
+  try {
+      // Extract token from Authorization header
+      const token = req.headers.authorization?.split(' ')[1];
+
+      if (!token) {
+          return res.status(401).json({ message: 'No token provided.' });
+      }
+
+      // Verify JWT token (replace 'your_jwt_secret' with your actual secret)
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      // Find the user in MongoDB by the ID stored in the token
+      const user = await User.findById(decoded.id);
+      if (!user) {
+          return res.status(401).json({ isAuthenticated: false, user: ""});
+      }
+
+      // User is authenticated
+      return res.status(200).json({ isAuthenticated: true, user });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ isAuthenticated: false, message: 'Server error.' });
+  }
+};
+
 // Signup function
 export const signup = async (req, res) => {
-  const { name, prefix, email, password } = req.body;
+  const { name, title , email, password, dob, phone, isWhatsapp } = req.body;
 
+  console.log(email)
   try {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -16,9 +44,12 @@ export const signup = async (req, res) => {
     // Create new user
     const newUser = new User({
       name,
-      prefix,
+      title,
       email,
-      password,  // Password will be hashed in middleware
+      password,
+      dob,
+      phone, 
+      isWhatsapp
     });
 
     await newUser.save();
@@ -31,7 +62,6 @@ export const signup = async (req, res) => {
 // Login function
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email });
 
@@ -50,11 +80,12 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '1y' }
     );
 
-    res.status(200).json({ token, userId: user._id });
+    res.status(200).json({token});
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: 'Something went wrong', error });
   }
 };

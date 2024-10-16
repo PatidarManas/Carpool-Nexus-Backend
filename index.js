@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { userRoutes } from "./routes/UserRoutes.js.js";
+import { userRoutes } from "./routes/UserRoutes.js";
 import { config } from "dotenv";
+import { MapRouter } from "./routes/MapRoutes.js";
+import { rideRouter } from "./routes/RideRoute.js";
 
 
 config();
@@ -32,6 +34,8 @@ connectDB();
 
 
 app.use("/v1/api/auth",userRoutes)
+app.use("/v1/api/places",MapRouter)
+app.use("/v1/api/rides",rideRouter)
 
 app.get("/", (req, res) =>
   res.send(

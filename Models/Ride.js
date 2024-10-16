@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
 // Ride Schema
 const rideSchema = new Schema({
@@ -9,30 +9,41 @@ const rideSchema = new Schema({
     required: true
   },
   from: {
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true }
+    description: { type: String, required: true },
+    location: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true }
+    }
   },
   to: {
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true }
+    description: { type: String, required: true },
+    location: {
+      lat: { type: Number, required: true },
+      lng: { type: Number, required: true }
+    }
   },
   stopovers: [
     {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true }
+      description: { type: String, required: true },
+      location: {
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true }
+      }
     }
   ],
-  path: [
-    {
-      latitude: { type: Number, required: true },
-      longitude: { type: Number, required: true }
-    }
-  ],
-  
+  path: [],
+  carType: {
+    type: String,
+    required: true,
+  },
   availableSeats: {
     type: Number,
     required: true,
     min: 1
+  },
+  alreadyOccupiedSeats: {
+    type: Number,
+    required: true
   },
   bookedSeats: [
     {
@@ -61,14 +72,30 @@ const rideSchema = new Schema({
     enum: ['any', 'only men', 'only female'],
     default: 'any'
   },
+  basePrice: {
+    type: Number,
+    required: true
+  },
+  usePricePerStopover: {
+    type: Boolean,
+    default: false
+  },
+  stopoverPrices: {
+    type: Map,
+    of: Number,
+    default: {}
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
   msg: {
     type: String,
     default: ''
   }
 }, {
-  timestamps: true 
+  timestamps: true
 });
 
 const Ride = mongoose.model('Ride', rideSchema);
-
-module.exports = Ride;
+export default Ride;
